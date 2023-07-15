@@ -7,6 +7,7 @@
  */
 
 #include <ezButton.h>
+#include <Mouse.h>
 
 #define VRX_PIN  A0 // Arduino pin connected to VRX pin
 #define VRY_PIN  A1 // Arduino pin connected to VRY pin
@@ -17,6 +18,8 @@ ezButton button(SW_PIN);
 int xValue = 0; // To store value of the X axis
 int yValue = 0; // To store value of the Y axis
 int bValue = 0; // To store value of the button
+
+int sensitivity = 500; //sensitivity for joystick controlling mouse
 
 void setup() {
   Serial.begin(9600) ;
@@ -29,7 +32,7 @@ void loop() {
   // read analog X and Y analog values
   xValue = analogRead(VRX_PIN);
   yValue = analogRead(VRY_PIN);
-
+ 
   // Read the button value
   bValue = button.getState();
 
@@ -50,4 +53,7 @@ void loop() {
   Serial.print(yValue);
   Serial.print(" : button = ");
   Serial.println(bValue);
+  
+  Mouse.move((yValue-518)/sensitivity, (xValue-530)/sensitivity, 0); //swapped x and y because of orientation of joystick
+  
 }
