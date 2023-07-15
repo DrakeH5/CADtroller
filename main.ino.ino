@@ -1,13 +1,6 @@
-/*
- * Created by ArduinoGetStarted.com
- *
- * This example code is in the public domain
- *
- * Tutorial page: https://arduinogetstarted.com/tutorials/arduino-joystick
- */
-
 #include <ezButton.h>
 #include <Mouse.h>
+#include <Keyboard.h>
 
 #define VRX_PIN  A0 // Arduino pin connected to VRX pin
 #define VRY_PIN  A1 // Arduino pin connected to VRY pin
@@ -19,7 +12,11 @@ int xValue = 0; // To store value of the X axis
 int yValue = 0; // To store value of the Y axis
 int bValue = 0; // To store value of the button
 
-int sensitivity = 500; //sensitivity for joystick controlling mouse
+int sensitivityX = 400; //sensitivity for joystick controlling mouse
+int sensitivityY = 500;
+
+bool shiftClicked = false;
+bool midMouseClicked = false;
 
 void setup() {
   Serial.begin(9600) ;
@@ -46,6 +43,25 @@ void loop() {
     // TODO do something here
   }
 
+  if(xValue != 530 || yValue != 518){
+    if(shiftClicked == false  && bValue == 1){
+      Keyboard.press(KEY_LEFT_SHIFT);
+      shiftClicked = true;
+    } else if(shiftClicked == true  && bValue == 0){
+      Keyboard.releaseAll();
+      shiftClicked = false;
+    }
+    if(midMouseClicked == false){
+      Mouse.press(MOUSE_MIDDLE);
+      midMouseClicked = true;
+    }
+  } else {
+    Keyboard.releaseAll();
+    Mouse.release(MOUSE_MIDDLE);
+    shiftClicked = false;
+    midMouseClicked = false;
+  }
+
   // print data to Serial Monitor on Arduino IDE
   Serial.print("x = ");
   Serial.print(xValue);
@@ -54,6 +70,6 @@ void loop() {
   Serial.print(" : button = ");
   Serial.println(bValue);
   
-  Mouse.move((yValue-518)/sensitivity, (xValue-530)/sensitivity, 0); //swapped x and y because of orientation of joystick
+  Mouse.move(-(yValue-518)/sensitivityY, (xValue-530)/sensitivityX, 0); //swapped x and y because of orientation of joystick
   
 }
